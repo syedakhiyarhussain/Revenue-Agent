@@ -1,3 +1,4 @@
+pyngrok
 psycopg2-binary
 pydantic_settings
 fastapi
@@ -6,4 +7,5 @@ pydantic
 sqlmodel # Used for database interaction (combines SQLAlchemy and Pydantic)
 python-dotenv # For loading environment variables (e.g., API keys)
 requests # For making external API calls (to billing/clinical/CKB systems)
+
 # google-genai # Include this if you decide to use Gemini for Agentic AI tasks
