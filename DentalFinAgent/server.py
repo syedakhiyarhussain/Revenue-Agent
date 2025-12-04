@@ -20,27 +20,36 @@ app = FastAPI(
     description="Intelligent Agent for Dental Billing & Financial Analysis."
 )
 
-# --- CORS CONFIGURATION (THE FIX) ---
-# ⚠️ IMPORTANT: Replace 'https://your-streamlit-app-name.streamlit.app' 
-# with the actual public domain of your Streamlit Cloud app.
-# Use [] when running locally to allow all origins
+# --- CORS CONFIGURATION (CRITICAL FIX) ---
+# ⚠️ ACTION REQUIRED: Replace the placeholder below with the actual public URL 
+# of your deployed Streamlit app (e.g., https://my-dental-agent.streamlit.app).
 origins = [
     "http://localhost:8000",
-    "http://localhost:8501", # Streamlit local dev port
-    "https://your-streamlit-app-name.streamlit.app", # <-- YOUR DEPLOYED STREAMLIT URL
-    # Add any other deployment URLs here (e.g., Render preview URLs)
+    "http://localhost:8501", 
+    "https://your-streamlit-app-name.streamlit.app", # <--- UPDATE THIS LINE
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"], # Allows GET, POST, PUT, DELETE
-    allow_headers=["*", "X-API-Key"], # Allows all headers, including your custom API key header
+    allow_methods=["*"], 
+    allow_headers=["*", "X-API-Key"], # Allows your custom authentication header
 )
 # -----------------------------------
 
 # Include the API routes
 app.include_router(api_router, prefix="/api")
 
-# ... (rest of server.py remains the same)
+
+@app.on_event("startup")
+async def startup_event():
+    """
+    Event that runs when the application starts up.
+    """
+    logger.info(f"{settings.APP_NAME} is starting up...")
+
+
+# Standard way to run the application (e.g., 'python server.py')
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
