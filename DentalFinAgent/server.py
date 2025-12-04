@@ -1,6 +1,7 @@
-# main.py
+# server.py (Add the CORS configuration)
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware # <-- NEW IMPORT
 import uvicorn
 import logging
 
@@ -19,19 +20,27 @@ app = FastAPI(
     description="Intelligent Agent for Dental Billing & Financial Analysis."
 )
 
+# --- CORS CONFIGURATION (THE FIX) ---
+# ⚠️ IMPORTANT: Replace 'https://your-streamlit-app-name.streamlit.app' 
+# with the actual public domain of your Streamlit Cloud app.
+# Use [] when running locally to allow all origins
+origins = [
+    "http://localhost:8000",
+    "http://localhost:8501", # Streamlit local dev port
+    "https://your-streamlit-app-name.streamlit.app", # <-- YOUR DEPLOYED STREAMLIT URL
+    # Add any other deployment URLs here (e.g., Render preview URLs)
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"], # Allows GET, POST, PUT, DELETE
+    allow_headers=["*", "X-API-Key"], # Allows all headers, including your custom API key header
+)
+# -----------------------------------
+
 # Include the API routes
 app.include_router(api_router, prefix="/api")
 
-
-@app.on_event("startup")
-async def startup_event():
-    """
-    Event that runs when the application starts up.
-    Can be used to check database connection, initialize integrations, etc.
-    """
-    logger.info(f"{settings.APP_NAME} is starting up...")
-
-
-# Standard way to run the application (e.g., 'python main.py')
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+# ... (rest of server.py remains the same)
